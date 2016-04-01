@@ -1,3 +1,4 @@
+# Load data from outer resources
 #
 class Parser
   # Create records array from obtained information
