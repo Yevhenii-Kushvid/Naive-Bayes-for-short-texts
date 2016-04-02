@@ -6,6 +6,16 @@ class Parser
   #
   # if(class_col_num == -1) => Records ( [ [" text full of words "], [" ... "], ... ] )
   # else => Records ( [ ["class_name", " text full of words "], [" ... "], ... ] )
+  def read_stop_words_from(file_name)
+    stop_words_list = [""]
+    File.open(file_name, "r+") do |text|
+      text.each_line do |line|
+        stop_words_list.push( line )
+      end
+    end
+    stop_words_list
+  end
+
   def read_csv(file_name)
     read_csv(file_name, 0)
   end
@@ -34,7 +44,7 @@ class Parser
         text.each_line do |line|
 
           line = line.split(separator)
-          total_records.push( [line[class_col_num], line[text_col_num]] )
+          total_records.push( {class: line[class_col_num], text: line[text_col_num]} )
 
         end
       end
@@ -47,7 +57,7 @@ class Parser
   #
   # => Classifier
   def load_classifier
-    
+
   end
 
   def read_csv_with_words_vector(file_name, vector_col_num, separator)

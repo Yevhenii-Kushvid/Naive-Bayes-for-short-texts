@@ -3,10 +3,16 @@ class Classifier
     @ham_words    = {}
     @spam_words   = {}
     @total_words  = {}
+    @class_names  = {} # { "class_name": uniq_id }
     @laplas       = 0
   end
+  
+  # initialize memory by memory file
+  def initialize(memory_file)
+    
+  end
 
-  # creating and load dump of classifier memory
+  # creating and load memory file of classifier
   def self.load
     self.load_from("nb.memory")
   end
@@ -42,7 +48,7 @@ class Classifier
 
   end
 
-  # choosing of best laplas factor in intervar with step
+  # choosing of the best laplas factor in intervar with step
   def crossvalidation_by(records)
     crossvalidation_by(records, 1..10)
   end
