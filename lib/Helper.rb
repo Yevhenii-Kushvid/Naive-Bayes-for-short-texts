@@ -13,6 +13,7 @@ class Helper
   end
 
   def clear_text(text)
+    text.downcase!
 
     # from linkshash
     text.gsub!(/(https|http):\/\/\S+\/(\w)?(.\S+)?/, " link ")
@@ -27,9 +28,10 @@ class Helper
     text.gsub!(/[\r\n"'()\[\]@\/&#]+/, "")
 
   end
-  
+
   def split_record(text)
-    text.split(/[\W]+/) 
+    #text.split(/[, \.?!%>\/*;&:#\n]+/)
+    text.split(/[\W]+/)
   end
 
   # split record into words
@@ -42,10 +44,11 @@ class Helper
         record[:text] -= stop_words
       else
         record         = split_record(record)
-        record        -= stop_words
+      record        -= stop_words
       end
+
     }
-    
+
     records
   end
 
@@ -58,7 +61,7 @@ class Helper
     if valid_classes
       # clear records with nonvalid classes
       records = records.delete_if{ |hash|
-      !valid_classes.include? hash[:class]
+        !valid_classes.include? hash[:class]
       }
     end
 
@@ -83,20 +86,20 @@ class Helper
     records_dup = records.clone
 
     training_set = []
-    (records.count * training).floor.times do
-      index = Random.rand(records.count)
+    (records_dup.count * training).floor.times do
+      index = Random.rand(records_dup.count)
       training_set << records_dup.slice!(index)
     end
 
     validation_set = []
-    (records.count * validation).floor.times do
-      index = Random.rand(records.count)
+    (records_dup.count * validation).floor.times do
+      index = Random.rand(records_dup.count)
       validation_set << records_dup.slice!(index)
     end
 
     test_set = []
-    (records.count * test).floor.times do
-      index = Random.rand(records.count)
+    (records_dup.count * test).floor.times do
+      index = Random.rand(records_dup.count)
       test_set << records_dup.slice!(index)
     end
 
