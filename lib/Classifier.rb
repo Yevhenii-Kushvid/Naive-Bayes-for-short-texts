@@ -3,9 +3,9 @@ class Classifier
   def initialize(memory = nil)
     unless memory
       @total_words  = {}  # { "word"      : word_count, ... }
-      @class_list  = []  # { "class_name": uniq_id, ... }
-      @class_list_words  = {}  # { "class_id"  : {"word": word_count}, ...}
-      @laplas_factor       = 10
+      @class_list  = []  # ["class_name", ... ]
+      @class_list_words  = {}  # { "class_name": {"word": word_count}, ...}
+      @laplas_factor     = 0.1
     else
       puts "#initialize by memory"
     end
@@ -46,77 +46,100 @@ class Classifier
           
           merge(words_hash, record[:class])
           merge(words_hash)
-        
         end
       }
     end
     # if input is text messages
+    
   end
 
   # classification
   def classify(input)
-  
     # declare hash counter for each class
-    @class_votes = {}
+    class_list_votes = {}
     @class_list.each{|class_name|
-      class_list_votes[class_name] = 0.0    
+      
+      total_class_words_count = @class_list_words[class_name].count.to_f  
+      total_words_count       = @total_words.count == 0 ? 1 : @total_words.count
+          
+      class_list_votes[class_name] = Math.log(total_class_words_count / total_words_count)
     }
-  
+    
     if input.kind_of?(Array)
       # if input is words vector
       @class_list.each{|class_name|
-        total_class_words_count = @class_list_words[class_name].count.to_f  
-        total_words_count       = @total_words.count == 0 ? 1 : @total_words.count
-          
-        class_voices = total_class_words_count / total_words_count
-        class_voices = 1 if class_voices == 0
-
-        class_list_votes[class_name] = Math.log(class_voices)
-
         input.each{|word|
-          if (@class_list_words[word])
-            word_class_count = (@class_votes[class_name][word] ? @class_votes[class_name][word] : 0 ).to_f
-            class_list_votes[class_name] += Math.log( (word_class_count + @laplas_factor) / ( words_class_count + @laplas_factor * @total_words.count ) )
+          if (@class_list_words[class_name][word])
+            
+            class_word_count              = @class_list_words[class_name][word]
+            class_list_votes[class_name] += Math.log( (class_word_count + @laplas_factor).to_f / ( class_word_count + @laplas_factor * @total_words.count ) )
+            
           else
             @class_list.each{|non_class_name|
+            
               if class_name != non_class_name
-                word_non_class_count = (@class_votes[non_class_name].count == 0 ? @class_votes[non_class_name].count : 0 ).to_f
+            
+                word_non_class_count              = @class_list_words[non_class_name].count
                 class_list_votes[non_class_name] += Math.log( @laplas_factor / ( word_non_class_count + @laplas_factor * @total_words.count ) )
+
               end
             }
           end
+#          puts "#{word} = #{class_list_votes}"
         }
+
       }
       # choose best match
-      result_class_name = 0
+      result_class_name = @class_list.first
       @class_list.each{ |class_name|
-        if class_list_votes[result_class_name] < class_list_votes[class_name]
+        if (class_list_votes[result_class_name] < class_list_votes[class_name])
           result_class_name == class_name 
         end
       }
-      result_class_name            
+      puts input if result_class_name == "spam" 
+      result_class_name     
     else
       # if input is text messages
+      
       "IDK"      
     end
   end
 
   # testing of classifier
   def test_by(records)
-
+    fails = 0
+    count = 0
+    records.each do |record|
+      count += 1
+      class_of_record = classify(record[:text])
+      unless record[:class] == class_of_record
+        fails += 1
+        # Uncomment if you want to see error records
+        #p [ class_of_record, record ]
+      end
+      #print "Records left: #{records.count - count} . Accuracy is: #{100 - fails.to_f / records.count * 100}\n"
+    end
+    100 - fails.to_f / records.count * 100
   end
 
   # choosing of the best laplas factor in intervar with step
-  def crossvalidation_by(records)
-    crossvalidation_by(records, 1..10)
-  end
+  # lower step - better result, but much more time 0.1
+  def crossvalidation_by(records, interval = 1..10, step = 0.1)
+    range_of_search = interval
+    
+    best_laplace_factor = @laplace_factor
+    best_result = 0;
+    range_of_search.each do |number|
+      @laplace_factor = number * step
+      current_result = test_by(records)
+      if current_result > best_result
+      best_laplace_factor = @laplace_factor
+      best_result = current_result
+      end
 
-  def crossvalidation_by(records, interval)
-    crossvalidation_by(records, interval, 0.1)
-  end
-
-  def crossvalidation_by(records, interval, step)
-
+      p current_result
+    end
+    @laplace_factor = best_laplace_factor
   end
   
   private

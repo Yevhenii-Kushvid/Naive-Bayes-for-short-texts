@@ -49,6 +49,10 @@ puts ham.to_f / records.count * 100
 # Load stop words
 stop_words = parser.read_stop_words_from(stop_words_file_name)
 stop_words = helper.clear(stop_words)
+stop_words.each{|stop_word|
+  stop_word = (helper.split_record(stop_word) - [""])
+}
+stop_words = stop_words.compact
 puts "\nLoaded stop words\n"
 
 # split records to words and clear them from stop words
@@ -56,8 +60,8 @@ records = helper.clear_stop_words(records, stop_words)
 puts "\nCleaned from stop words\n"
 
 # delete all nonuniq records
-records.uniq!
-puts "\nDeleted duplicates\n\n"
+#records.uniq!
+#puts "\nDeleted duplicates\n\n"
 
 spam = records.select{|hash| hash[:class] == classes[0] }.count
 ham  = records.select{|hash| hash[:class] == classes[1] }.count
@@ -74,4 +78,6 @@ class_list.uniq!
 
 classifier.obtain_valid_classes(class_list)
 classifier.study_by training_set
-
+#puts "best laplas factor #{classifier.crossvalidation_by(validation_set, 1..10, 1)}"
+puts "=================================="
+puts classifier.test_by  test_set
