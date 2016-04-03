@@ -13,43 +13,57 @@ class Helper
   end
 
   def clear_text(text)
-    text.downcase!
+    text.strip!
+
+    # text.downcase!
 
     # from linkshash
     text.gsub!(/(https|http):\/\/\S+\/(\w)?(.\S+)?/, " link ")
 
-    # from emails
-    #text.gsub!(/\A([\w+\-]\.?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, " email ")
+    text.gsub!(/[.,-?!;:*+=@"'\t]+/, " ")
+
+    text.gsub!(/[^A-Za-zА-Яа-я0-9\- \n\']+/, " ")
 
     # from numbers
     text.gsub!(/[0-9]+/, " 0 ")
 
-    # from symbols
-    text.gsub!(/[\r\n"'()\[\]@\/&#]+/, "")
+    text.gsub!(/[ ]+/, " ")
+    
+
+  # from emails
+  #text.gsub!(/\A([\w+\-]\.?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, " email ")
+
+  # from symbols
+  # text.gsub!(/[\r\n"'()\[\]@\/&#]+/, "")
 
   end
 
   def split_record(text)
-    text.split(/[, \.?!%>\/*;&:#\n]+/)
-    #text.split(/[\W]+/)
+    text.split(/[, \.?!%<()>\/*;&:#\n]+/)
+  #text.split(/[\W]+/)
   end
 
   # split record into words
   # clear words array from stop words
   def clear_stop_words(records, stop_words)
+    records_are_hash = false
 
-    records.each{ |record|
-      if record.kind_of?(Hash)
+    result = records.map{ |record|
+      records_are_hash = record.kind_of?(Hash)
+      if records_are_hash
         record[:text]  = split_record(record[:text])
         record[:text] -= stop_words
       else
         record         = split_record(record)
-      record        -= stop_words
+        record        -= stop_words
       end
-
     }
 
-    records
+    if records_are_hash
+      records
+    else
+      result
+    end
   end
 
   def normalize(records, *valid_classes)
@@ -61,7 +75,7 @@ class Helper
     if valid_classes
       # clear records with nonvalid classes
       records = records.delete_if{ |hash|
-        !valid_classes.include? hash[:class]
+      !valid_classes.include? hash[:class]
       }
     end
 
