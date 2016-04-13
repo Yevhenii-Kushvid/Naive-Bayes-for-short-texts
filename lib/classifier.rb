@@ -157,8 +157,7 @@ class Classifier
       @laplas_factor = number * step
       
       current_result = test_by(records)
-      puts "current laplas value: #{@laplas_factor} \n result is: #{current_result}"
-      
+
       if current_result > best_result
         best_laplace_factor = @laplas_factor
         best_result = current_result

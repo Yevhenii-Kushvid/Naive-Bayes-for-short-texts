@@ -84,18 +84,6 @@ class Helper
   end
 
   # create sets of records for classifier study
-  def create_sets_of_records(records)
-    create_sets_of_records(records, 0.7, 0.1)
-  end
-
-  def create_sets_of_records(records, training)
-    create_sets_of_records(records, training, (1 - training))
-  end
-
-  def create_sets_of_records(records, training, test)
-    create_sets_of_records(records, training, (1 - training - test), test)
-  end
-
   def create_sets_of_records(records, training, validation, test)
     records_dup = records.clone
 

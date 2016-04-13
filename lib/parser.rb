@@ -16,19 +16,7 @@ class Parser
     stop_words_list
   end
 
-  def read_csv(file_name)
-    read_csv(file_name, 0)
-  end
-
-  def read_csv(file_name, text_col_num)
-    read_csv(file_name, text_col_num, ";")
-  end
-
-  def read_csv(file_name, text_col_num, separator)
-    read_csv(file_name, text_col_num, separator, -1)
-  end
-
-  def read_csv(file_name, text_col_num, separator, class_col_num)
+  def read_csv(file_name, text_col_num, separator, class_col_num = -1)
     total_records = []
     if ( class_col_num == -1 )
       File.open(file_name, "r+") do |text|
@@ -58,10 +46,6 @@ class Parser
   # => Classifier
   def load_classifier
 
-  end
-
-  def read_csv_with_words_vector(file_name, vector_col_num, separator)
-    read_csv_with_words_vector(file_name, text_col_num, separator, -1)
   end
 
   def read_csv_with_words_vector(file_name, vector_col_num, separator, class_col_num)

@@ -1,6 +1,6 @@
-require File.dirname(__FILE__) + "/lib/Parser.rb"
-require File.dirname(__FILE__) + "/lib/Helper.rb"
-require File.dirname(__FILE__) + "/lib/Classifier.rb"
+require File.dirname(__FILE__) + "/lib/parser.rb"
+require File.dirname(__FILE__) + "/lib/helper.rb"
+require File.dirname(__FILE__) + "/lib/classifier.rb"
 
 stop_words_file_name = "data/stop-words-english.txt"
 
@@ -14,14 +14,12 @@ separator = "\t"
 text_col  = 1
 class_col = 0
 
-=begin
-file_name = "data/input1.csv"
 file_name = "data/input2.csv"
+file_name = "data/input1.csv"
 classes   = ["true", "false"]
 separator = ","
 text_col  = 0
 class_col = 1
-=end
 
 parser      = Parser.new
 helper      = Helper.new
@@ -72,11 +70,11 @@ unless dump_file_exists
   result = []
   spam_records = records.select{|hash| hash[:class] == classes[0] }
   ham_records  = records.select{|hash| hash[:class] == classes[1] }
-  2_000.times do
+  5_000.times do
     index = Random.rand(spam_records.count)
     result << spam_records.slice!(index)
   end
-  8_000.times do
+  5_000.times do
     index = Random.rand(ham_records.count)
     result << ham_records.slice!(index)
   end
@@ -96,6 +94,8 @@ unless dump_file_exists
   records.each{|hash| class_list << hash[:class] }
   class_list.uniq!
 
+  p class_list
+
   classifier.obtain_valid_classes(class_list)
   classifier.study_by training_set
 
@@ -106,7 +106,7 @@ unless dump_file_exists
   #puts ham.to_f / validation_set.count * 100
 
   #puts "best laplas factor #{classifier.crossvalidation_by(validation_set, 1..10, 3)}"
-  classifier.save
+  # classifier.save
   puts "=================================="
   spam = test_set.select{|hash| hash[:class] == classes[0] }.count
   ham  = test_set.select{|hash| hash[:class] == classes[1] }.count
