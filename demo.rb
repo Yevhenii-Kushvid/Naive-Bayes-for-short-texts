@@ -66,20 +66,7 @@ unless dump_file_exists
   #records.uniq!
   #puts "\nDeleted duplicates\n\n"
 
-=begin
-  result = []
-  spam_records = records.select{|hash| hash[:class] == classes[0] }
-  ham_records  = records.select{|hash| hash[:class] == classes[1] }
-  5_000.times do
-    index = Random.rand(spam_records.count)
-    result << spam_records.slice!(index)
-  end
-  5_000.times do
-    index = Random.rand(ham_records.count)
-    result << ham_records.slice!(index)
-  end
-  records = result
-=end
+f
 
   spam = records.select{|hash| hash[:class] == classes[0] }.count
   ham  = records.select{|hash| hash[:class] == classes[1] }.count

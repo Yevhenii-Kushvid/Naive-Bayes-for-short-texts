@@ -144,7 +144,8 @@ class Classifier
         fails += 1
       end
     end
-    100 - fails.to_f / records.count * 100
+    # 100 - fails.to_f / records.count * 100
+    fails.to_f / records.count
   end
 
   # choosing of the best laplas factor in intervar with step

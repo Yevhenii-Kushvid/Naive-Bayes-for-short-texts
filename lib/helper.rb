@@ -6,7 +6,7 @@ class Helper
         # clear record[:text] (text position in record hash)
         record = clear_text(record[:text])
       else
-      # clear text
+        # clear text
         clear_text record
       end
     }
@@ -22,7 +22,7 @@ class Helper
 
     text.gsub!(/[.,-?!;:*+=@"'\t]+/, " ")
 
-    text.gsub!(/[^A-Za-zА-Яа-я0-9\- \n\']+/, " ")
+    text.gsub!(/[^A-Za-zА-Яа-я0-9\- \r\n\']+/, " ")
 
     # from numbers
     text.gsub!(/[0-9]+/, " 0 ")
@@ -39,7 +39,7 @@ class Helper
   end
 
   def split_record(text)
-    text.split(/[, \.?!%<()>\/*;&:#\n]+/)
+    text.split(/[, \.?!%<()>\/*;&:#\r\n]+/)
   #text.split(/[\W]+/)
   end
 
