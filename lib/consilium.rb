@@ -14,6 +14,8 @@ class Consilium
 
   @classes
 
+  @best_cleaning_options
+
   def initialize(count_of_classifiers: 3)
     @parser = Parser.new
     @helper = Helper.new
@@ -23,6 +25,19 @@ class Consilium
     count_of_classifiers.times do |i|
       @classifiers << Classifier.new
     end
+
+    @best_cleaning_options = {
+        first_last_spaces: true,
+        downcase: true,
+        link: true,
+        domain: true,
+        numbers: true,
+        noncharacter: true,
+        symbols: true,
+        spaces: true,
+        english: true,
+        russian: true
+    }
   end
 
   def load_stop_words(file_name)
@@ -59,6 +74,84 @@ class Consilium
 
     @records
   end
+
+  # only 10 records for test
+  def autocleaner(records, options = {
+      first_last_spaces: true,
+      downcase: true,
+      link: true,
+      domain: true,
+      numbers: true,
+      noncharacter: true,
+      symbols: true,
+      spaces: true,
+      english: true,
+      russian: true
+  })
+    if options
+      # delete first and last spaces
+      if :first_last_spaces
+        text.strip!
+        print :first_last_spaces
+      end
+
+      # downcase
+      if :downcase
+        text.downcase!
+        print :downcase
+      end
+
+      # link
+      if :link
+        text.gsub!(/(https|http):\/\/\S+\/(\w)?(.\S+)?/, " link ")
+        print :link
+      end
+
+      # domain
+      if :domain
+        text.gsub!(/(https|http):\/\/\S+\/(\w)?(.\S+)?/, " link ")
+      end
+
+      # numbers
+      if :numbers
+        text.gsub!(/[0-9]+/, " 0 ")
+      end
+
+      # noncharacter symbols
+      if :noncharacter
+        text.split(/[\W]+/)
+      end
+
+      # symbols
+      if :symbols
+        text.gsub!(/[.,-?!;:*+=@"'\t]+/, " ")
+        text.gsub!(/[^A-Za-zА-Яа-я0-9\- \r\n\']+/, " ")
+      end
+
+      # nonenglish
+      if :english
+        text.gsub!(/[^A-Za-z]+/, " ")
+      end
+
+      # nonrussian
+      if :russian
+        text.gsub!(/[^А-Яа-я]+/, " ")
+      end
+
+      # spaces
+      if :spaces
+        text.gsub!(/[ ]+/, " ")
+      end
+    else
+      # experiments
+
+
+    end
+
+    # vector of best cleaning choosing
+  end
+
+
 
   def study_self
     result = 1
@@ -214,7 +307,7 @@ separator = ","
 text_col = 0
 class_col = 1
 
-consilium = Consilium.new(count_of_classifiers: 5)
+consilium = Consilium.new(count_of_classifiers: 1)
 
 puts "\n Consilium created."
 
@@ -232,6 +325,16 @@ puts "\n Get knowledge about input data."
 result = []
 spam_records = input.select { |hash| hash[:class] == classes[0] }
 ham_records = input.select { |hash| hash[:class] == classes[1] }
+
+# records_for_cleaner_study = []
+# 1_000.times do
+#   index = Random.rand(input.count)
+#   records_for_cleaner_study << input.slice!(index)
+# end
+# consilium.autocleaner(records_for_cleaner_study)
+#
+# puts "===================================================="
+
 2_000.times do
   index = Random.rand(spam_records.count)
   result << spam_records.slice!(index)

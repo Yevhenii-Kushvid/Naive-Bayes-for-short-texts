@@ -28,19 +28,18 @@ class Helper
     text.gsub!(/[0-9]+/, " 0 ")
 
     text.gsub!(/[ ]+/, " ")
-    
 
-  # from emails
-  #text.gsub!(/\A([\w+\-]\.?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, " email ")
+    # from emails
+    # text.gsub!(/\A([\w+\-]\.?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i, " email ")
 
-  # from symbols
-  # text.gsub!(/[\r\n"'()\[\]@\/&#]+/, "")
+    # from symbols
+    # text.gsub!(/[\r\n"'()\[\]@\/&#]+/, "")
 
   end
 
   def split_record(text)
     text.split(/[, \.?!%<()>\/*;&:#\r\n]+/)
-  #text.split(/[\W]+/)
+    #text.split(/[\W]+/)
   end
 
   # split record into words
